@@ -15,7 +15,7 @@ CREATE TABLE role (
     title VARCHAR(30) NOT NULL,
     salary DECIMAL NOT NULL,
     department_id INT,
-    /* The foreign key constraint ensures that any value entered in the department_id column of the current table must exist as a value in the id column of the department table. This relationship enforces data consistency between the tables and prevents orphaned records that do not have a corresponding entry in the related table.*/
+    -- The foreign key constraint ensures that any value entered in the department_id column of the current table must exist as a value in the id column of the department table. This relationship enforces data consistency between the tables and prevents orphaned records that do not have a corresponding entry in the related table.
     /* FOREIGN KEY (department_id): specifies that the department_id column in the current table will be a foreign key.
        REFERENCES department(id): indicates that the department_id column references the id column of the department table. */
     FOREIGN KEY (department_id) REFERENCES department(id)
@@ -26,9 +26,9 @@ CREATE TABLE employee (
     first_name VARCHAR(30),
     last_name VARCHAR(30),
     role_id INT,
-    /* include employee manader or write null if no manager*/
+    -- Include employee manader or write null if no manager 
     manager_id INT NULL,
     FOREIGN KEY (role_id) REFERENCES role(id),
-    /* The manager_id column is essentially pointing to the id of another row in the same employee table, where that row represents the manager of the current employee. So, the foreign key relationship is between manager_id in the employee table and id in the same employee table.*/
+    -- The manager_id column is essentially pointing to the id of another row in the same employee table, where that row represents the manager of the current employee. So, the foreign key relationship is between manager_id in the employee table and id in the same employee table.
     FOREIGN KEY (manager_id) REFERENCES employee(id)
 );
