@@ -114,7 +114,7 @@ function viewEmployeesByDepartment() {
   //employee is aliased as e, role is aliased as r, and department is aliased as d
   var query =
     `SELECT d.id, d.name, r.salary AS budget
-    FROM employee e
+    FROM employees e
     LEFT JOIN role r
 	  ON e.role_id = r.id
     LEFT JOIN department d
@@ -156,7 +156,7 @@ function promptDepartment(departmentChoices) {
     // SQL query to retrieve employees of the selected department
     var query =
       `SELECT e.id, e.first_name, e.last_name, r.title, d.name AS department 
-      FROM employee e
+      FROM employees e
       JOIN role r ON e.role_id = r.id
       JOIN department d ON d.id = r.department_id
       WHERE d.id = ?`;
