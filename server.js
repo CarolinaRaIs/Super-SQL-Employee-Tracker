@@ -47,7 +47,7 @@ function start() {
                     addEmployee();
                     break;
                 case "Remove Employees":
-                    removeEmployees();
+                    removeEmployee();
                     break;
                 case "Update Employee Role":
                     updateEmployeeRole();
@@ -62,14 +62,64 @@ function start() {
         });
 }
 
+// Retrieve all employee records from the database and display them
+// This function executes a SELECT query to fetch all employee data
+// It then prints the employee information to the console using console.table
+// Finally, it calls the start() function to return to the main menu
 function viewEmployees() {
     // logic to view employees
     // call start() when done
+    console.log("Viewing employees\n");
+
+    // Perform database query to retrieve employees
+    var query = "SELECT * FROM employees";
+    connection.query(query, function (err, res) {
+      if (err) throw err;
+  
+      // Display employees using console.table
+      console.table(res);
+      console.log("Employees viewed!\n");
+  
+      // Call start() to continue the prompt
+      start();
+    });
 }
 
+// Retrieve and display employees by department
+// This function executes a SQL query to retrieve employee data based on the department
+// It then prints the department's id, name, and the budget (salary) of employees in that department
+// The retrieved data is displayed in a table using console.table
+// Finally, it prompts the user to choose a department from the available choices
 function viewEmployeesByDepartment() {
-    // logic to view employees by department
-    // call start() when done
+  console.log("Viewing employees by department\n");
+
+  // SQL query to select department information and the budget (salary) for each department
+  var query =
+  //aliases= used to create shorthand references to the tables in the rest of the query.
+  //employee is aliased as e, role is aliased as r, and department is aliased as d
+  var query =
+    `SELECT d.id, d.name, r.salary AS budget
+    FROM employee e
+    LEFT JOIN role r
+	  ON e.role_id = r.id
+    LEFT JOIN department d
+    ON d.id = r.department_id
+    GROUP BY d.id, d.name`
+
+  // Executes the SQL query to retrieve department information
+  connection.query(query, function (err, res) {
+    if (err) throw err;
+
+    // Create an array of department choices based on the query result
+    const departmentChoices = res.map(data => ({
+      value: data.id, name: data.name
+    }));
+
+    console.table(res);
+    console.log("Department view succeed!\n");
+
+    promptDepartment(departmentChoices);
+  });
 }
 
 function addEmployee() {
@@ -77,8 +127,8 @@ function addEmployee() {
     // call start() when done
 }
 
-function removeEmployees() {
-    // logic to remove employees
+function removeEmployee() {
+    // logic to remove employee
     // call start() when done
 }
 
@@ -92,14 +142,6 @@ function addRole() {
     // call start() when done
 }
 
-
-
-
-
-
-module.exports = {
-  getAllDepartments,
-};
 
 
 
