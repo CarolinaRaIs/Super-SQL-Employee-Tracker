@@ -1,61 +1,96 @@
-const mysql = require('mysql2');
-require('dotenv').config();
+//Import dependencies
+const mysql = require("mysql");
 const inquirer = require("inquirer");
+require("console.table");
+//Import functions from prompt.js file
+const { 
+  firstPrompt, 
+  promptDepartment, 
+  promptAddEmployee, 
+  promptDeleteEmployee, 
+  promptEmployeeAndRole, 
+  promptAddRole } = require("./prompt");
 
 // Create a non-promise connection to the database
-const con = mysql.createConnection({
+const connection = mysql.createConnection({
   host: 'localhost',
-   // Your port; if not 3306
+   // Port; if not 3306
   port: 3306,
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
 });
 
-//promise function called on connection to upgrade the non-promise connection to use Promises
-const connection = con.promise();
 
-//Departments:
+connection.connect(function (err) {
+    if (err) throw err;
+    console.log("connected as id " + connection.threadId);
+    // Font name:Ogre, w:Smush (R), h:Smush (U): http://patorjk.com/software/taag/#p=testall&h=2&v=3&f=Train&t=TeamManagerPro
+    console.log(``)
+    //initiates app
+    start();
+});
 
-//perform query and return results
-// async keyword enables use of await within function
-async function getAllDepartments() {
-  try {
-    // The connection.query method, which now returns a Promise due to the connection upgrade, is used with the await keyword to perform the query asynchronously. 
-    // The Promise resolves when the query is completed, allowing the rest of the function to continue executing without blocking other operations.
-    // connection.query() returns an array containing two elements: the result of the query(data retrieved from the db) and the metadata(information about the columns and table, etc).
-        // const [departments] --> (brackets = array deconstructuring) telling JavaScript to assign the first element of the returned array (the query result which is the data) to the departments variable.
-    // SELECT * FROM department --> retrieves all the columns and rows from the department table
-    const [departments] = await connection.query('SELECT * FROM department');
-    return departments;
-  } catch (error) {
-    console.log(error);
-  }
+function start() {
+    //prompts the user for what action they want to make in the database
+    firstPrompt()
+        .then(answer => {
+            switch(answer.action) {
+              //All these function imported at start of server.js and come from prompt.js
+                case "View Employees":
+                    viewEmployees();
+                    break;
+                case "View Employees by Department":
+                    viewEmployeesByDepartment();
+                    break;
+                case "Add Employee":
+                    addEmployee();
+                    break;
+                case "Remove Employees":
+                    removeEmployees();
+                    break;
+                case "Update Employee Role":
+                    updateEmployeeRole();
+                    break;
+                case "Add Role":
+                    addRole();
+                    break;
+                case "End":
+                    connection.end();
+                    break;
+            }
+        });
 }
 
-// add a new department based on the name of the department
-async function addDepartment(name) {
-    try {
-        //'INSERT INTO department (name) VALUES (?)' = SQL query string = instructs the database to insert a new row into the department table with the specified name
-                // ? = a placeholder for the actual value of the name parameter.
-                // [name] = an array containing the actual value of the name parameter. It is used to replace the ? placeholder in the SQL query string.
-        await connection.query('INSERT INTO department (name) VALUES (?)', [name]);
-    } catch (error) {
-        console.log(error);
-    }
+function viewEmployees() {
+    // logic to view employees
+    // call start() when done
 }
 
-
-//Roles:
-async function getAllRoles() {
-    try {
-        const [roles] = await connection.query('SELECT*FROM role')
-        return roles;
-    }
+function viewEmployeesByDepartment() {
+    // logic to view employees by department
+    // call start() when done
 }
 
+function addEmployee() {
+    // logic to add employee
+    // call start() when done
+}
 
+function removeEmployees() {
+    // logic to remove employees
+    // call start() when done
+}
 
+function updateEmployeeRole() {
+    // logic to update employee role
+    // call start() when done
+}
+
+function addRole() {
+    // logic to add role
+    // call start() when done
+}
 
 
 
