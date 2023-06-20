@@ -122,6 +122,45 @@ function viewEmployeesByDepartment() {
   });
 }
 
+// User chooses from the department list, then list of employees should appear
+function promptDepartment(departmentChoices) {
+  inquirer
+    .prompt([
+      {
+        type: "list",
+        name: "departmentId",
+        message: "Which department would you like to choose?",
+        choices: departmentChoices
+      }
+    ])
+    .then(function (answer) {
+      console.log("answer ", answer.departmentId);
+
+      // SQL query to retrieve employees of the selected department
+      var query =
+        `SELECT e.id, e.first_name, e.last_name, r.title, d.name AS department 
+        FROM employee e
+        JOIN role r ON e.role_id = r.id
+        JOIN department d ON d.id = r.department_id
+        WHERE d.id = ?`;
+
+      connection.query(query, answer.departmentId, function (err, res) {
+        if (err) throw err;
+        // Display the employee records in a formatted table
+        console.table("response ", res);
+        // res.affectedRows= Print the number of affected rows (number of employees viewed)
+          //In this case, it represents the number of employees that were selected and retrieved from the database based on the chosen department. By printing this value along with the message "Viewed employees!", 
+          //it provides feedback to the user on how many employees were fetched and displayed.
+        console.log(res.affectedRows + "Employees fetched!\n");
+
+        // Return to the main menu after displaying the results
+        firstPrompt();
+      });
+    });
+}
+
+
+
 function addEmployee() {
     // logic to add employee
     // call start() when done
