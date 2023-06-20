@@ -1,6 +1,8 @@
-DROP TABLE IF EXISTS department;
+-- Drop the tables with proper dependency order
+-- the employees table is dropped first since it has a foreign key constraint referencing the role table. Next, the role table is dropped, and finally, the department table is dropped.
+DROP TABLE IF EXISTS employees;
 DROP TABLE IF EXISTS role;
-DROP TABLE IF EXISTS employee;
+DROP TABLE IF EXISTS department;
 
 DROP DATABASE IF EXISTS employee_tracker;
 CREATE DATABASE employee_tracker;
@@ -17,7 +19,7 @@ CREATE TABLE department (
 
 CREATE TABLE role (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    title VARCHAR(30) NOT NULL,
+    title VARCHAR(45) NOT NULL,
     salary DECIMAL NOT NULL,
     department_id INT,
     -- The foreign key constraint ensures that any value entered in the department_id column of the current table must exist as a value in the id column of the department table. This relationship enforces data consistency between the tables and prevents orphaned records that do not have a corresponding entry in the related table.
@@ -27,10 +29,10 @@ CREATE TABLE role (
     FOREIGN KEY (department_id) REFERENCES department(id)
 );
 
-CREATE TABLE employee (
+CREATE TABLE employees (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    first_name VARCHAR(30),
-    last_name VARCHAR(30),
+    first_name VARCHAR(250),
+    last_name VARCHAR(250),
     role_id INT,
     -- Include employee manader or write null if no manager 
 
@@ -38,5 +40,5 @@ CREATE TABLE employee (
     FOREIGN KEY (role_id) REFERENCES role(id),
     -- The manager_id column is essentially pointing to the id of another row in the same employee table, where that row represents the manager of the current employee. So, the foreign key relationship is between manager_id in the employee table and id in the same employee table.
 
-    FOREIGN KEY (manager_id) REFERENCES employee(id)
+    FOREIGN KEY (manager_id) REFERENCES employees(id)
 );

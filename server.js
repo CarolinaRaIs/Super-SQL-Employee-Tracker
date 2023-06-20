@@ -1,15 +1,22 @@
 //Import dependencies
-const mysql = require("mysql");
+const mysql = require("mysql2");
 const inquirer = require("inquirer");
 require("console.table");
+//Need dotenv so that server file can pull from .env file (added security, process.env variables), .env file needs to be at root of directory
+require('dotenv').config();
+
 //Import functions from prompt.js file
 const { 
   firstPrompt, 
-  promptDepartment, 
+  //promptDepartment, 
   promptAddEmployee, 
   promptDeleteEmployee, 
   promptEmployeeAndRole, 
-  promptAddRole } = require("./prompt");
+  promptAddRole } = require("./lib/prompt");
+
+console.log('DB_USER:', process.env.DB_USER);
+console.log('DB_PASSWORD:', process.env.DB_PASSWORD);
+  
 
 // Create a non-promise connection to the database
 const connection = mysql.createConnection({
@@ -26,7 +33,15 @@ connection.connect(function (err) {
     if (err) throw err;
     console.log("connected as id " + connection.threadId);
     // Font name:Ogre, w:Smush (R), h:Smush (U): http://patorjk.com/software/taag/#p=testall&h=2&v=3&f=Train&t=TeamManagerPro
-    console.log(``)
+    console.log(`
+ _____                                                               ___           
+/__   \___  __ _ _ __ ___   /\/\   __ _ _ __   __ _  __ _  ___ _ __ / _ \_ __ ___  
+  / /\/ _ \/ _\` | '_ \` _ \ /    \ / _\` | '_ \ / _\` |/ _\` |/ _ \ '__/ /_)/ '__/ _ \ 
+ / / |  __/ (_| | | | | | / /\/\ \ (_| | | | | (_| | (_| |  __/ | / ___/| | | (_) |
+ \/   \___|\__,_|_| |_| |_\/    \/\__,_|_| |_|\__,_|\__, |\___|_| \/    |_|  \___/ 
+                                                    |___/                        
+`);
+
     //initiates app
     start();
 });
@@ -94,7 +109,7 @@ function viewEmployeesByDepartment() {
   console.log("Viewing employees by department\n");
 
   // SQL query to select department information and the budget (salary) for each department
-  var query =
+
   //aliases= used to create shorthand references to the tables in the rest of the query.
   //employee is aliased as e, role is aliased as r, and department is aliased as d
   var query =
@@ -122,9 +137,11 @@ function viewEmployeesByDepartment() {
   });
 }
 
-// User chooses from the department list, then list of employees should appear
+//Prompt the user to choose a department from a list of available departments. 
+//Once the user selects a department, the function executes a database query to retrieve the employees belonging to that department. 
+//It then displays the employee information in the console.
 function promptDepartment(departmentChoices) {
-  inquirer
+  return inquirer
     .prompt([
       {
         type: "list",
@@ -133,52 +150,185 @@ function promptDepartment(departmentChoices) {
         choices: departmentChoices
       }
     ])
-    .then(function (answer) {
-      console.log("answer ", answer.departmentId);
+  .then(answer => {
+    console.log("answer ", answer.departmentId);
 
-      // SQL query to retrieve employees of the selected department
-      var query =
-        `SELECT e.id, e.first_name, e.last_name, r.title, d.name AS department 
-        FROM employee e
-        JOIN role r ON e.role_id = r.id
-        JOIN department d ON d.id = r.department_id
-        WHERE d.id = ?`;
+    // SQL query to retrieve employees of the selected department
+    var query =
+      `SELECT e.id, e.first_name, e.last_name, r.title, d.name AS department 
+      FROM employee e
+      JOIN role r ON e.role_id = r.id
+      JOIN department d ON d.id = r.department_id
+      WHERE d.id = ?`;
 
-      connection.query(query, answer.departmentId, function (err, res) {
-        if (err) throw err;
-        // Display the employee records in a formatted table
-        console.table("response ", res);
-        // res.affectedRows= Print the number of affected rows (number of employees viewed)
+    connection.query(query, answer.departmentId, function (err, res) {
+      if (err) throw err;
+      // Display the employee records in a formatted table
+      console.table("response ", res);
+       // res.affectedRows= Print the number of affected rows (number of employees viewed)
           //In this case, it represents the number of employees that were selected and retrieved from the database based on the chosen department. By printing this value along with the message "Viewed employees!", 
           //it provides feedback to the user on how many employees were fetched and displayed.
-        console.log(res.affectedRows + "Employees fetched!\n");
+      console.log(res.affectedRows + "employees are being viewed!\n");
 
-        // Return to the main menu after displaying the results
-        firstPrompt();
-      });
+      // Return to the main menu after displaying the results
+      firstPrompt();
     });
+  });
 }
 
 
 
 function addEmployee() {
-    // logic to add employee
-    // call start() when done
+  console.log("Adding an employee\n");
+
+  // Perform database queries to retrieve roles and managers
+  var roleQuery = "SELECT * FROM roles";
+  var managerQuery = "SELECT * FROM employees";
+  Promise.all([
+    connection.query(roleQuery),
+    connection.query(managerQuery)
+  ])
+    .then(([roles, managers]) => {
+      // Create an array of role titles for the prompt
+      const roleChoices = roles.map(({ id, title }) => ({
+        value: id, name: `${id} ${title}`
+      }));
+
+      // Create an array of manager names for the prompt
+      const managerChoices = managers.map(({ id, first_name, last_name }) => ({
+        value: id, name: `${id} ${first_name} ${last_name}`
+      }));
+
+      // Prompt the user to enter employee details
+      promptAddEmployee
+        .then(function (answer) {
+          // Construct the SQL query to insert the new employee
+          var query = "INSERT INTO employees SET ?";
+          var employeeData = {
+            first_name: answer.first_name,
+            last_name: answer.last_name,
+            role_id: answer.role_id,
+            manager_id: answer.manager_id
+          };
+
+          // Execute the insertion query
+          connection.query(query, employeeData, function (err, res) {
+            if (err) throw err;
+            console.log("Employee added!\n");
+            // Return to the main menu
+            firstPrompt(); 
+          });
+        });
+    });
+    
 }
 
 function removeEmployee() {
-    // logic to remove employee
-    // call start() when done
+  console.log("Removing an employee\n");
+
+  // Perform database query to retrieve employees
+  var query = "SELECT * FROM employees";
+  connection.query(query, function (err, employees) {
+    if (err) throw err;
+
+    // Create an array of employee choices for the prompt
+    const employeeChoices = employees.map(({ id, first_name, last_name }) => ({
+      value: id, name: `${id} ${first_name} ${last_name}`
+    }));
+
+    // Prompt the user to select an employee to remove
+    promptDeleteEmployee(employeeChoices)
+      .then(function (answer) {
+        // Construct the SQL query to remove the selected employee
+        var query = "DELETE FROM employees WHERE ?";
+        var employeeId = { id: answer.employeeId };
+
+        // Execute the deletion query
+        connection.query(query, employeeId, function (err, res) {
+          if (err) throw err;
+          console.log("Employee removed!\n");
+          // Return to the main menu
+          firstPrompt(); 
+        });
+      });
+  });
 }
 
 function updateEmployeeRole() {
-    // logic to update employee role
-    // call start() when done
+  console.log("Updating an employee's role\n");
+
+  // Perform database queries to retrieve employees and roles
+  var employeeQuery = "SELECT * FROM employees";
+  var roleQuery = "SELECT * FROM roles";
+  Promise.all([
+    connection.query(employeeQuery),
+    connection.query(roleQuery)
+  ])
+    .then(([employees, roles]) => {
+      // Create an array of employee choices for the prompt
+      const employeeChoices = employees.map(({ id, first_name, last_name }) => ({
+        value: id, name: `${id} ${first_name} ${last_name}`
+      }));
+
+      // Create an array of role choices for the prompt
+      const roleChoices = roles.map(({ id, title }) => ({
+        value: id, name: `${id} ${title}`
+      }));
+
+      // Prompt the user to select an employee and a new role
+      promptEmployeeAndRole(employeeChoices, roleChoices)
+        .then(function (answer) {
+          // Construct the SQL query to update the employee's role
+          var query = "UPDATE employees SET ? WHERE ?";
+          var employeeData = {
+            role_id: answer.roleId
+          };
+          var employeeId = { id: answer.employeeId };
+
+          // Execute the update query
+          connection.query(query, [employeeData, employeeId], function (err, res) {
+            if (err) throw err;
+            console.log("Employee role updated!\n");
+            // Return to the main menu
+            firstPrompt(); 
+          });
+        });
+    });
 }
 
 function addRole() {
-    // logic to add role
-    // call start() when done
+  console.log("Adding a role\n");
+
+  // Perform database query to retrieve departments
+  var query = "SELECT * FROM departments";
+  connection.query(query, function (err, departments) {
+    if (err) throw err;
+
+    // Create an array of department choices for the prompt
+    const departmentChoices = departments.map(({ id, name }) => ({
+      value: id, name: `${id} ${name}`
+    }));
+
+    // Prompt the user to enter role details
+    promptAddRole(departmentChoices)
+      .then(function (answer) {
+        // Construct the SQL query to insert the new role
+        var query = "INSERT INTO roles SET ?";
+        var roleData = {
+          title: answer.roleTitle,
+          salary: answer.roleSalary,
+          department_id: answer.departmentId
+        };
+
+        // Execute the insertion query
+        connection.query(query, roleData, function (err, res) {
+          if (err) throw err;
+          console.log("Role added!\n");
+          // Return to the main menu
+          firstPrompt(); 
+        });
+      });
+  });
 }
 
 

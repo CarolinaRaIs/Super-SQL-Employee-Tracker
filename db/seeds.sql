@@ -20,7 +20,7 @@ VALUES ('Sales Manager', 100000, 1),
 
 -- Insert sample employees
 
-INSERT INTO employee (first_name, last_name, role_id, manager_id) 
+INSERT INTO employees (first_name, last_name, role_id, manager_id) 
 VALUES ('Juan', 'Guerrero', 1, NULL),
        ('Bobby', 'Fillet', 2, 1),
        ('Jabari', 'Jallow', 3, NULL),
