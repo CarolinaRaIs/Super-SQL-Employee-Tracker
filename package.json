@@ -30,6 +30,6 @@
     "console.table": "^0.10.0",
     "dotenv": "^16.3.1",
     "inquirer": "^8.2.4",
-    "mysql2": "^3.4.0"
+    "mysql2": "^2.3.0"
   }
 }
