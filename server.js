@@ -194,15 +194,15 @@ function addEmployee() {
   console.log("Adding an employee\n");
 
   // Perform database queries to retrieve roles and managers
-  var roleQuery = "SELECT * FROM roles";
+  var roleQuery = "SELECT * FROM role";
   var managerQuery = "SELECT * FROM employees";
   Promise.all([
     connection.query(roleQuery),
     connection.query(managerQuery)
   ])
-    .then(([roles, managers]) => {
+    .then(([role, managers]) => {
       // Create an array of role titles for the prompt
-      const roleChoices = roles.map(({ id, title }) => ({
+      const roleChoices = role.map(({ id, title }) => ({
         value: id, name: `${id} ${title}`
       }));
 
@@ -212,7 +212,7 @@ function addEmployee() {
       }));
 
       // Prompt the user to enter employee details
-      promptAddEmployee
+      promptAddEmployee()
         .then(function (answer) {
           // Construct the SQL query to insert the new employee
           var query = "INSERT INTO employees SET ?";
@@ -271,19 +271,19 @@ function updateEmployeeRole() {
 
   // Perform database queries to retrieve employees and roles
   var employeeQuery = "SELECT * FROM employees";
-  var roleQuery = "SELECT * FROM roles";
+  var roleQuery = "SELECT * FROM role";
   Promise.all([
     connection.query(employeeQuery),
     connection.query(roleQuery)
   ])
-    .then(([employees, roles]) => {
+    .then(([employees, role]) => {
       // Create an array of employee choices for the prompt
       const employeeChoices = employees.map(({ id, first_name, last_name }) => ({
         value: id, name: `${id} ${first_name} ${last_name}`
       }));
 
       // Create an array of role choices for the prompt
-      const roleChoices = roles.map(({ id, title }) => ({
+      const roleChoices = role.map(({ id, title }) => ({
         value: id, name: `${id} ${title}`
       }));
 
@@ -325,7 +325,7 @@ function addRole() {
     promptAddRole(departmentChoices)
       .then(function (answer) {
         // Construct the SQL query to insert the new role
-        var query = "INSERT INTO roles SET ?";
+        var query = "INSERT INTO role SET ?";
         var roleData = {
           title: answer.roleTitle,
           salary: answer.roleSalary,
