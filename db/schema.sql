@@ -21,7 +21,7 @@ CREATE TABLE role (
     id INT AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(45) NOT NULL,
     salary DECIMAL NOT NULL,
-    department_id INT,
+    department_id INT NULL,
     -- The foreign key constraint ensures that any value entered in the department_id column of the current table must exist as a value in the id column of the department table. This relationship enforces data consistency between the tables and prevents orphaned records that do not have a corresponding entry in the related table.
     /* FOREIGN KEY (department_id): specifies that the department_id column in the current table will be a foreign key.
        REFERENCES department(id): indicates that the department_id column references the id column of the department table. */

@@ -14,8 +14,8 @@ const {
   promptEmployeeAndRole, 
   promptAddRole } = require("./lib/prompt");
 
-console.log('DB_USER:', process.env.DB_USER);
-console.log('DB_PASSWORD:', process.env.DB_PASSWORD);
+//console.log('DB_USER:', process.env.DB_USER);
+//console.log('DB_PASSWORD:', process.env.DB_PASSWORD);
   
 
 // Create a non-promise connection to the database
@@ -32,14 +32,16 @@ const connection = mysql.createConnection({
 connection.connect(function (err) {
     if (err) throw err;
     console.log("connected as id " + connection.threadId);
-    // Font name:Ogre, w:Smush (R), h:Smush (U): http://patorjk.com/software/taag/#p=testall&h=2&v=3&f=Train&t=TeamManagerPro
+    // Font name:Doom, w:Smush (R), h:Smush (U): http://patorjk.com/software/taag/#p=testall&h=2&v=3&f=Train&t=TeamManagerPro
     console.log(`
- _____                                                               ___           
-/__   \___  __ _ _ __ ___   /\/\   __ _ _ __   __ _  __ _  ___ _ __ / _ \_ __ ___  
-  / /\/ _ \/ _\` | '_ \` _ \ /    \ / _\` | '_ \ / _\` |/ _\` |/ _ \ '__/ /_)/ '__/ _ \ 
- / / |  __/ (_| | | | | | / /\/\ \ (_| | | | | (_| | (_| |  __/ | / ___/| | | (_) |
- \/   \___|\__,_|_| |_| |_\/    \/\__,_|_| |_|\__,_|\__, |\___|_| \/    |_|  \___/ 
-                                                    |___/                        
+    _____                   ___  ___                                 ______          
+    |_   _|                  |  \\/  |                                 | ___ \\         
+      | | ___  __ _ _ __ ___ | .  . | __ _ _ __   __ _  __ _  ___ _ __| |_/ / __ ___  
+      | |/ _ \\/ _\` | '_ \` _ \\| |\\/| |/ _\` | '_ \\ / _\` |/ _\` |/ _ \\ '__|  __/ '__/ _ \\
+      | |  __/ (_| | | | | | | |  | | (_| | | | | (_| | (_| |  __/ |  | |  | | | (_) |
+      \\_/\\___|\\__,_|_| |_| |_|\\_|  |_/\\__,_|_| |_|\\__,_|\\__, |\\___|_|  \\_|  |_|  \\___/ 
+                                                        __/ |                         
+                                                       |___/   
 `);
 
     //initiates app
@@ -51,7 +53,6 @@ function start() {
     firstPrompt()
         .then(answer => {
             switch(answer.action) {
-              //All these function imported at start of server.js and come from prompt.js
                 case "View Employees":
                     viewEmployees();
                     break;
@@ -87,7 +88,17 @@ function viewEmployees() {
     console.log("Viewing employees\n");
 
     // Perform database query to retrieve employees
-    var query = "SELECT * FROM employees";
+    //var query = "SELECT * FROM employees";
+    var query =
+    `SELECT e.id, e.first_name, e.last_name, r.title, d.name AS department, r.salary, CONCAT(m.first_name, ' ', m.last_name) AS manager
+    FROM employees e
+    LEFT JOIN role r
+	  ON e.role_id = r.id
+    LEFT JOIN department d
+    ON d.id = r.department_id
+    LEFT JOIN employees m
+	  ON m.id = e.manager_id`
+
     connection.query(query, function (err, res) {
       if (err) throw err;
   
@@ -141,7 +152,7 @@ function viewEmployeesByDepartment() {
 //Once the user selects a department, the function executes a database query to retrieve the employees belonging to that department. 
 //It then displays the employee information in the console.
 function promptDepartment(departmentChoices) {
-  return inquirer
+  inquirer
     .prompt([
       {
         type: "list",
@@ -171,7 +182,7 @@ function promptDepartment(departmentChoices) {
       console.log(res.affectedRows + "employees are being viewed!\n");
 
       // Return to the main menu after displaying the results
-      firstPrompt();
+      start();
     });
   });
 }
@@ -179,6 +190,7 @@ function promptDepartment(departmentChoices) {
 
 
 function addEmployee() {
+  //By including "\n", the subsequent console output will start on a new line, improving the visual structure and readability of the displayed information.
   console.log("Adding an employee\n");
 
   // Perform database queries to retrieve roles and managers
@@ -216,7 +228,7 @@ function addEmployee() {
             if (err) throw err;
             console.log("Employee added!\n");
             // Return to the main menu
-            firstPrompt(); 
+            start(); 
           });
         });
     });
@@ -248,7 +260,7 @@ function removeEmployee() {
           if (err) throw err;
           console.log("Employee removed!\n");
           // Return to the main menu
-          firstPrompt(); 
+          start(); 
         });
       });
   });
@@ -290,7 +302,7 @@ function updateEmployeeRole() {
             if (err) throw err;
             console.log("Employee role updated!\n");
             // Return to the main menu
-            firstPrompt(); 
+            start(); 
           });
         });
     });
@@ -325,7 +337,7 @@ function addRole() {
           if (err) throw err;
           console.log("Role added!\n");
           // Return to the main menu
-          firstPrompt(); 
+          start(); 
         });
       });
   });
