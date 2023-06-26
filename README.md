@@ -139,7 +139,7 @@ App in command line:
 
        Contributions are welcome and encouraged for this project. If you find any issues or have any suggestions for new features, please open an issue or submit a pull request. Before submitting a pull request, please ensure that your code adheres to the project's coding guidelines and has appropriate test coverage. Thank you for your interest in contributing to this project!  
 
-       Thank you [stellalph](https://github.com/stellalph) for sharing your knowledge to help in the completion of this project!
+       Thank you [EdenKhaos](https://github.com/EdenKhaos) for sharing your knowledge to help in the completion of this project!
    
 ## [Tests:](#tests:)
 
