@@ -1,5 +1,5 @@
 //Import dependencies
-const mysql = require("mysql2/promise");
+const mysql = require("mysql2");
 const inquirer = require("inquirer");
 require("console.table");
 //Need dotenv so that server file can pull from .env file (added security, process.env variables), .env file needs to be at root of directory
@@ -156,7 +156,7 @@ async function viewEmployeesByDepartment() {
 
     // Create an array of department choices based on the query result
     const departmentChoices = res.map(data => ({
-      value: id, name: name
+      value: data.id, name: data.name
     }));
 
     console.table(res);

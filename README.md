@@ -1,34 +1,30 @@
-# Super-SQL-Employee-Tracker
-A command-line application that manages a company's employee database, using Node.js, Inquirer, and MySQL.
-
-# prog-web-app-text-editor
-A text editor that runs in the browser.
+# SQL-Team-Manager-Pro
 
 ![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)
 
 ## [Description:](#description)
 
-        Just Another Text Editor (JATE) is a Progressive Web Application (PWA) that provides a user-friendly interface for text editing, both online and offline. Whether you're jotting down quick notes or drafting detailed documents, JATE provides a seamless and robust solution to your text editing needs.
+        SQL Team Manager Pro is a command-line application that allows you to manage your employee database efficiently. It provides various features to view, add, update, and remove employees, roles, and departments. With the help of SQL queries, the application interacts with a MySQL database, enabling you to perform common database operations.
 
         The application leverages several modern web technologies and frameworks to provide a rich user experience:
 
         JavaScript: 
-        JATE is built with JavaScript, the programming language of the web, which enables dynamic and interactive features.
+        This app is built with JavaScript, the programming language of the web, which enables dynamic and interactive features.
 
-        Webpack: 
-        Webpack is used as a module bundler for the application. It manages and loads dependencies, and also provides a development server for working on the project.
+        Node.js: 
+        A JavaScript runtime environment that allows the execution of JavaScript code outside of a web browser.
 
-        Babel: 
-        Babel is used to transpile ES6+ JavaScript code into a backwards-compatible version of JavaScript that can be run by older JavaScript engines, ensuring broad browser compatibility.
+        MySQL: 
+        A popular open-source relational database management system used to store and retrieve data.
 
-        Workbox: 
-        Google's Workbox libraries are used for caching and service worker management. They make it easier to create a rich, offline-capable PWA and handle background tasks like caching and fetch requests.
+        Inquirer: 
+        A command-line interface package for Node.js that simplifies user input by providing interactive prompts.
 
-        Service Workers: Service workers are scripts that your browser runs in the background, separate from a web page, allowing for features that don't need a web page or user interaction, like push notifications, background sync, and caching for offline support.
+        Console.table: 
+        A utility package that formats and displays tabular data in the console.
 
-        Progressive Web Application (PWA): 
-        PWAs combine the best of web and mobile apps, and provide capabilities like working offline, push notifications, and device hardware access. They are fast, reliable, and engaging.
-
+        dotenv: 
+        A package that loads environment variables from a .env file into the application's process.env.
 
 ## [Table of Contents:](#table-of-contents:)
    
@@ -42,56 +38,98 @@ A text editor that runs in the browser.
    
 ## [Installation:](#installation:)
 
-    Before you continue, ensure you have met the following requirements:
+Before you continue, ensure you have met the following requirements:
 
-    *You have installed Node.js which includes npm (Node Package Manager). If they're not, you can download and install Node.js (which includes npm) from the official website: https://nodejs.org/.
+* You have installed Node.js which includes npm (Node Package Manager). If they're not, you can download and install Node.js (which includes npm) from the official website: https://nodejs.org/.
 
-    Once those are installed:
+Once those are installed:
 
-    *Clone the repository or download the code to your local machine.
-    *Navigate to the directory that contains the package.json file.
-    *Install the nnecessary dependencies:
-
-        To install the necessary dependencies, run the following command:
-        
-        npm install
+1. Clone the repository or download the code to your local machine.
+2. Navigate to the directory that contains the package.json file.
+3. Install the necessary dependencies: 
     
-        This command should be run in the directory that contains your package.json file, and it will install all the dependencies listed in that file.
+    To install the necessary dependencies, run the following command:
+        
+    `npm install`
+    
+    This command should be run in the directory that contains your package.json file, and it will install all the dependencies listed in that file.
+    
+4. In the root directory of the project, create a file named `.env`.
+
+5. Open the `.env` file with a text editor and add the following lines:
+
+    `` ` 
+    DB_HOST=localhost
+    DB_PORT=3306
+    DB_USER=your_mysql_username
+    DB_PASSWORD=your_mysql_password
+    DB_NAME=your_database_name
+    `` ` 
+
+    Replace `your_mysql_username`, `your_mysql_password`, and `your_database_name` with your actual MySQL configuration values.
+
+6. Save the `.env` file.
     
 ## [Usage:](#usage:)
 
-    To use the prog-web-app-text-editor you can directly go to the Heroku link without having to do anything else. 
+    To use the SQL Team Manager Pro: 
 
-Site on Heroku showing downloadable abilities:
-![plot](./Assets/PWA-heroku-install.png)
+1. Open a new terminal or command prompt window and run the following command  to access the MySQL shell:
 
-The application's manifest.json file:
-![plot](./Assets/PWA-install-manifest.png)
+    `mysql -h DB_HOST -u DB_USER -p`
 
-The applications's service worker:
-![plot](./Assets/PWA-app-registered-service-worker.png)
+    Replace `DB_HOST` with your MySQL host, `DB_USER` with your MySQL username, and -p indicates that a password will be prompted.
 
-The applications IndexedDB:
-![plot](./Assets/PWA-app-IndexedDB.png)
+2. Enter your MySQL password when prompted. This is the same password you set up in your `.env` file.
 
-    Heroku Link:
-    https://prog-web-app-text-editor.herokuapp.com/ 
+3. Once you are in the MySQL shell, type the following command to select the database you want to use:
+
+    `USE your_database_name;`
+
+    Replace `your_database_name` with the name of the database you want to use for the application.
+
+4. To verify that the database was selected correctly, you can run the following command to display a list of tables in the selected database:
+
+    `SHOW TABLES;`
+
+    You should see the tables related to the application's database schema.
+
+5. To populate the database with the necessary schema, navigate to the directory that contains the `schema.sql` file and run the following command in the MySQL shell:
+
+    `SOURCE path-to-schema.sql;` 
+
+    Replace `path-to-schema.sql` with the actual path to the `schema.sql` file on your machine.
+
+6. After executing the schema.sql file, you can populate the database with sample data (if available) by navigating to the directory that contains the seeds.sql file and running the following command in the MySQL shell:
+
+    `SOURCE path-to-seeds.sql;` 
+
+    Replace `path-to-seeds.sql` with the actual path to the seeds.sql file on your machine.
+
+7. Exit the MySQL shell by typing:
+
+    `exit;`
+
+8. Go back to the terminal or command prompt window.
+
+9. Run the following command to start the application:
+
+    `node server.js`
+
+    The application will start running, and you will see the initial prompt in the terminal or command prompt. Follow the prompts to interact with the employee database.
+
+App in command line:
+![plot](./employee-tracker.png)
+
+[Video Walk-through: Testing App](https://drive.google.com/file/d/1jrcaVYFqHufM4ovCH7TUHCeH83FJPhkV/view?usp=share_link)
+
 
     To access the Github Repository visit:
-    https://github.com/CarolinaRaIs/prog-web-app-text-editor
+    https://github.com/CarolinaRaIs/sql-team-manager-pro
 
     To access the deployed site visit:
-    https://carolinarais.github.io/prog-web-app-text-editor/   
+    https://carolinarais.github.io/sql-team-manager-pro/  
 
-    
-    WHEN I run `npm run start` from the root directory
-    THEN I find that my application should start up the backend and serve the client
-    WHEN I run the text editor application from my terminal
-    THEN I find that my JavaScript files have been bundled using webpack
-    WHEN I run my webpack plugins
-    THEN I find that I have a generated HTML file, service worker, and a manifest file
-
-![plot](./Assets/PWA-npm-start.png)
 
 ## [License:](#license:)
 
