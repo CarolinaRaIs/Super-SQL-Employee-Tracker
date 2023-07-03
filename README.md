@@ -121,8 +121,8 @@ Once those are installed:
 App in command line:
 ![plot](./employee-tracker.png)
 
-[Video Walk-through: Testing App](https://drive.google.com/file/d/1jrcaVYFqHufM4ovCH7TUHCeH83FJPhkV/view?usp=share_link)
-
+[Video Walk-through: Testing App](https://drive.google.com/file/d/1wDuSIrDgxPXbfl696ghPV5OiEHp4Ed7A/view)
+If you are having issues viewing the walk-through video, download it then view it. 
 
     To access the Github Repository visit:
     https://github.com/CarolinaRaIs/sql-team-manager-pro
